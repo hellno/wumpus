@@ -55,9 +55,268 @@ public class Wumpus extends Base {
 		surrounding();
 		while((getInputTuple().color!=Color.YELLOW)){
 			if(getInputTuple().airDraft==false)
-				setMapFieldSurrounding(1,x,y);
-			
-			while(true){}
+				
+				//Explorationsalgorithmus:
+				//move auf neues Feld -> evtl. 3 weitere Möglichkeiten
+
+				int left, right, up, down = 0;
+				boolean l,r,u,d=false;
+				//es kann sich nur eine Position geändert haben -> else if
+				if(oldPosition[0]-x>0){
+					//left
+					right = map[x+1][y];
+					up = map[x][y+1]; 
+					down = map[x][y-1];
+					sum = right+up+down;
+					//Richtungen die einen Ausweg darstellen werden auf 'true' gesetzt
+					if(right==1)
+						r=true;
+					if(up==1)
+						u=true;
+					if(down==1)
+						d=true;
+
+					if(sum==0){
+						setMapField(0,x,y);
+						moveLeft();
+					}
+					if(sum==1){
+						//Suche nach Ausweg, der nicht die letzte Position ist
+						if(r)
+							moveRight();
+						if(u)
+							moveUp();
+						if(d)
+							moveDown();
+					}
+					if(sum==2){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(r&&u){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnUp();
+						}
+						if(r&&d){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnDown();
+						}
+						if(u&&d){
+							if(rand>=0.5)
+								turnUp();
+							else
+								turnDown();
+						}
+					}
+					if(sum==3){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(rand>=0.66)
+							turnRight();
+						else if(rand>=0.33)
+							turnUp();
+						else 
+							turnDown();
+					}
+
+				}	
+				} 
+				else if(oldPosition[0]-x<0){
+					//right
+					left = map[x-1][y];
+					up = map[x][y+1]; 
+					down = map[x][y-1];
+					sum = left+up+down;
+					//Richtungen die einen Ausweg darstellen werden auf 'true' gesetzt
+					if(left==1)
+						l=true;
+					if(up==1)
+						u=true;
+					if(down==1)
+						d=true;
+
+					if(sum==0){
+						setMapField(0,x,y);
+						moveRight();
+					}
+					if(sum==1){
+						//Suche nach Ausweg, der nicht die letzte Position ist
+						if(l)
+							moveLeft();
+						if(u)
+							moveUp();
+						if(d)
+							moveDown();
+					}
+					if(sum==2){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(l&&u){
+							if(rand>=0.5)
+								turnLeft();
+							else
+								turnUp();
+						}
+						if(l&&d){
+							if(rand>=0.5)
+								turnLeft();
+							else
+								turnDown();
+						}
+						if(u&&d){
+							if(rand>=0.5)
+								turnUp();
+							else
+								turnDown();
+						}
+					}
+					if(sum==3){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(rand>=0.66)
+							turnLeft();
+						else if(rand>=0.33)
+							turnUp();
+						else 
+							turnDown();
+					}
+
+
+				}	
+				} 
+				else if(oldPosition[1]-y>0){
+					//up
+					left = map[x-1][y];
+					right = map[x+1][y];
+					down = map[x][y-1];
+
+					sum = left+right+down;
+					//Richtungen die einen Ausweg darstellen werden auf 'true' gesetzt
+					if(right==1)
+						r=true;
+					if(left==1)
+						l=true;
+					if(down==1)
+						d=true;
+
+					if(sum==0){
+						setMapField(0,x,y);
+						moveUp();
+					}
+					if(sum==1){
+						//Suche nach Ausweg, der nicht die letzte Position ist
+						if(r)
+							moveRight();
+						if(l)
+							moveLeft();
+						if(d)
+							moveDown();
+					}
+					if(sum==2){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(r&&l){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnLeft();
+						}
+						if(r&&d){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnDown();
+						}
+						if(l&&d){
+							if(rand>=0.5)
+								turnLeft();
+							else
+								turnDown();
+						}
+					}
+					if(sum==3){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(rand>=0.66)
+							turnRight();
+						else if(rand>=0.33)
+							turnLeft();
+						else 
+							turnDown();
+					}
+
+				}	
+				} 
+				else if(oldPosition[1]-y<0){
+					//down
+					left = map[x-1][y];
+					right = map[x+1][y];
+					up = map[x][y+1]; 
+
+
+					sum = right+up+left;
+					//Richtungen die einen Ausweg darstellen werden auf 'true' gesetzt
+					if(right==1)
+						r=true;
+					if(up==1)
+						u=true;
+					if(left==1)
+						l=true;
+
+					if(sum==0){
+						setMapField(0,x,y);
+						moveDown();
+					}
+					if(sum==1){
+						//Suche nach Ausweg, der nicht die letzte Position ist
+						if(r)
+							moveRight();
+						if(u)
+							moveUp();
+						if(l)
+							moveLeft();
+					}
+					if(sum==2){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(r&&u){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnUp();
+						}
+						if(r&&l){
+							if(rand>=0.5)
+								turnRight();
+							else
+								turnLeft();
+						}
+						if(u&&l){
+							if(rand>=0.5)
+								turnUp();
+							else
+								turnLeft();
+						}
+					}
+					if(sum==3){
+						//Suche nach Auswegen und entscheide zufällig zwischen Ihnen
+						int rand = Math.random();
+						if(rand>=0.66)
+							turnRight();
+						else if(rand>=0.33)
+							turnUp();
+						else 
+							turnLeft();
+					}
+
+				}
+				
+				//Ende Explorationsalgorithmus
+				
+				
 		}
 		printMap();
 		
