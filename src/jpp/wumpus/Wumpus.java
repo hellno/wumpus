@@ -69,19 +69,21 @@ public class Wumpus extends Base {
 		
 		
 		//zusaetzliche Erforschung vor normalem Ablauf
-		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
+		while(getInputTuple().airDraft==false && getInputTuple().east==true && getInputTuple().stench==false && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
 		turnDown();
 		moveIt();
 		turnRight();
+		if(getInputTuple().robotPositions.get(ROBOT_ID).y!=1){
 		moveIt();
 		moveIt();
-		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
+		}
+		while(getInputTuple().airDraft==false && getInputTuple().east==true && getInputTuple().stench==false && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
 		turnDown();
-		while(getInputTuple().airDraft==false && getInputTuple().south==true &&checkedMap[0][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
+		while(getInputTuple().airDraft==false && getInputTuple().south==true && getInputTuple().stench==false && checkedMap[0][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 			moveIt();
 		}
 		
@@ -109,7 +111,7 @@ public class Wumpus extends Base {
 				checkedMap[coordinates[0]+1][coordinates[1]]=true;
 				if(!rightSideDiscovery){
 					turnDown();
-					while(getInputTuple().airDraft==false && getInputTuple().south==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
+					while(getInputTuple().airDraft==false && getInputTuple().stench==false && getInputTuple().south==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 						moveIt();
 						checkedMap[coordinates[0]+1][coordinates[1]]=true;
 					}
