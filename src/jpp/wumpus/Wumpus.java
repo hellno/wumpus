@@ -24,6 +24,7 @@ public class Wumpus extends Base {
 	int[] coordinates = new int[2];
 	int[] lastCoordinates = new int[2];
 	int[] wumpCoordinates = new int[2];
+	int[] inFrontOfTheWumpus = new int[2];
 	
 	//boolean, ob rechte Seite schon erforscht wurde, beschleunigt das Vorgehen auf manchen Maps
 	boolean rightSideDiscovery=false;
@@ -60,7 +61,10 @@ public class Wumpus extends Base {
 			System.out.println("Wump bei (" + wumpCoordinates[0] + "|" + wumpCoordinates[1] + ")");
 			setMapFieldValue(0,wumpCoordinates[0],wumpCoordinates[1]);
 			setMapFieldBool(true,wumpCoordinates);
-		}
+			inFrontOfTheWumpus[0] = wumpCoordinates[0];
+			inFrontOfTheWumpus[1] = wumpCoordinates[1]-1;
+			}
+		
 		//Startfeldbesuche manuell um 2 erhoehen, damit am Anfang andere Felder 'attraktiver' sind
 		setMapTravelValue(0,0);
 		setMapTravelValue(0,0);
@@ -70,18 +74,21 @@ public class Wumpus extends Base {
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
 		System.out.println("ROBOT_ID: "+ ROBOT_ID);
 		
-	
 		//zusaetzliche Erforschung vor normalem Ablauf
 		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
+		
 		if(!(getInputTuple().robotPositions.get(ROBOT_ID).y==0 && getInputTuple().robotPositions.get(ROBOT_ID).x==2)){ 
 			turnDown();
 			moveIt();
 			}
 		turnRight();
+
+		
 		if(!(getInputTuple().robotPositions.get(ROBOT_ID).y==1 && getInputTuple().robotPositions.get(ROBOT_ID).x==1) 
-				&& (!(getInputTuple().robotPositions.get(ROBOT_ID).y==1 && getInputTuple().robotPositions.get(ROBOT_ID).x==2))){
+				&& (!(getInputTuple().robotPositions.get(ROBOT_ID).y==1 && getInputTuple().robotPositions.get(ROBOT_ID).x==2)
+						&& (!(getInputTuple().robotPositions.get(ROBOT_ID).y==0 && getInputTuple().robotPositions.get(ROBOT_ID).x==2)))){
 				moveIt();
 				moveIt();
 			
@@ -275,18 +282,16 @@ public class Wumpus extends Base {
 	}
 	
 	private void moveIt(){
+		int[] actualCoordinates = {getInputTuple().robotPositions.get(ROBOT_ID).x ,getInputTuple().robotPositions.get(ROBOT_ID).y}; 
+		System.out.println("coord.: " + actualCoordinates[0] + "|" + actualCoordinates[1]);
+		System.out.println("coord.: " + inFrontOfTheWumpus[0] + "|" + inFrontOfTheWumpus[1]);
 		
-		int myTargetY = wumpCoordinates[0]-1;
-		System.out.println("Pos.: (" + getInputTuple().robotPositions.get(ROBOT_ID).x + "|" + getInputTuple().robotPositions.get(ROBOT_ID).y + ")" 
-				+ " wump bei (" + wumpCoordinates[0] + "|" + wumpCoordinates[1] + ")" 
-				+ " zielplatz ist (" + wumpCoordinates[0] + "|" + (wumpCoordinates[1]-1) + ")" );
-	
-		int[] inFrontOfTheWumpus = {wumpCoordinates[0], wumpCoordinates[1]-1};
-		if(Arrays.equals(coordinates,inFrontOfTheWumpus)){
+		if(Arrays.equals(actualCoordinates,inFrontOfTheWumpus)){
 			turnDown();
 			shoot();
 			System.out.println("Geschossen!");
 			ROBOT_ID--;
+			
 		}
 		//neue Koordinaten setzen
 		setLastCoordinates(getCoordinates());
