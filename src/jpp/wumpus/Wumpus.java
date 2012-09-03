@@ -1,6 +1,7 @@
 package jpp.wumpus;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import user.Base;
@@ -48,6 +49,8 @@ public class Wumpus extends Base {
 		if((getInputTuple().robotPositions.get(0).x == 0) && (getInputTuple().robotPositions.get(0).y==0)){
 			wumpDead=true;
 			ROBOT_ID=0;
+			wumpCoordinates[0]=100000;
+			wumpCoordinates[1]=100000;
 		}
 		else{
 			wumpDead=false;
@@ -67,26 +70,30 @@ public class Wumpus extends Base {
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
 		System.out.println("ROBOT_ID: "+ ROBOT_ID);
 		
-		
+	
 		//zusaetzliche Erforschung vor normalem Ablauf
-		while(getInputTuple().airDraft==false && getInputTuple().east==true && getInputTuple().stench==false && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
+		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
-		turnDown();
-		moveIt();
+		if(!(getInputTuple().robotPositions.get(ROBOT_ID).y==0 && getInputTuple().robotPositions.get(ROBOT_ID).x==2)){ 
+			turnDown();
+			moveIt();
+			}
 		turnRight();
-		if(getInputTuple().robotPositions.get(ROBOT_ID).y!=1){
-		moveIt();
-		moveIt();
+		if(!(getInputTuple().robotPositions.get(ROBOT_ID).y==1 && getInputTuple().robotPositions.get(ROBOT_ID).x==1) 
+				&& (!(getInputTuple().robotPositions.get(ROBOT_ID).y==1 && getInputTuple().robotPositions.get(ROBOT_ID).x==2))){
+				moveIt();
+				moveIt();
+			
 		}
 		while(getInputTuple().airDraft==false && getInputTuple().east==true && getInputTuple().stench==false && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
+
 		turnDown();
 		while(getInputTuple().airDraft==false && getInputTuple().south==true && getInputTuple().stench==false && checkedMap[0][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 			moveIt();
 		}
-		
 		
 		//Aktionsschleife
 		while(!(getInputTuple().color.equals(Color.YELLOW))){
@@ -122,7 +129,6 @@ public class Wumpus extends Base {
 				checkedMap[coordinates[0]][coordinates[1]+1]=true;
 			}
 			
-			
 			surroundingValues = getSurroundingValues(getInputTuple().robotPositions.get(ROBOT_ID));
 			surroundingTravelValues = getSurroundingTravelValues(getInputTuple().robotPositions.get(ROBOT_ID));
 			
@@ -133,7 +139,7 @@ public class Wumpus extends Base {
 			}
 			
 			if(sum==0){
-				//System.out.println("We're LOST!");
+				System.out.println("We're LOST!");
 				goHome();
 			}
 			if(moveCount>2000){
@@ -144,11 +150,10 @@ public class Wumpus extends Base {
 		}
 		
 		System.out.println("Gold gefunden! -> Heimreise");
-		goHome();
 		printMap();
+		goHome();
 		done();
 	}
-	
 	//"intelligente" Wegsuche
 	//mit Umkreissuche nach ungefaehrlichen Koordinaten
 	//mit bevorzugten, weniger besuchten Koordinaten
@@ -271,6 +276,18 @@ public class Wumpus extends Base {
 	
 	private void moveIt(){
 		
+		int myTargetY = wumpCoordinates[0]-1;
+		System.out.println("Pos.: (" + getInputTuple().robotPositions.get(ROBOT_ID).x + "|" + getInputTuple().robotPositions.get(ROBOT_ID).y + ")" 
+				+ " wump bei (" + wumpCoordinates[0] + "|" + wumpCoordinates[1] + ")" 
+				+ " zielplatz ist (" + wumpCoordinates[0] + "|" + (wumpCoordinates[1]-1) + ")" );
+	
+		int[] inFrontOfTheWumpus = {wumpCoordinates[0], wumpCoordinates[1]-1};
+		if(Arrays.equals(coordinates,inFrontOfTheWumpus)){
+			turnDown();
+			shoot();
+			System.out.println("Geschossen!");
+			ROBOT_ID--;
+		}
 		//neue Koordinaten setzen
 		setLastCoordinates(getCoordinates());
 		setMapTravelValue(getCoordinates()[0],getCoordinates()[1]);
@@ -278,6 +295,10 @@ public class Wumpus extends Base {
 		moveCount++;
 		//bewegen
 		moveForward();
+		
+		//Wumpus erreicht
+		
+		
 		
 	}
 	
