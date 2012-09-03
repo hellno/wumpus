@@ -28,7 +28,7 @@ public class Wumpus extends Base {
 	boolean rightSideDiscovery=false;
 
 	//Schwellwert fuer schon besuchte Felder
-	int maxVisitCount = 3;
+	int maxVisitCount = 2;
 	//Array der besuchten Koordinaten in aufsteigender Reihenfolge
 	RobotPosition[] travelCoordinates = new RobotPosition[1000000];
 	//Anzahl der Laufbewegungen
@@ -66,17 +66,24 @@ public class Wumpus extends Base {
 		setMapFieldSurrounding(getCoordinates());
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
 		System.out.println("ROBOT_ID: "+ ROBOT_ID);
-	
+		
+		
 		//zusaetzliche Erforschung vor normalem Ablauf
 		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
-		goHome();
+		turnDown();
+		moveIt();
+		turnRight();
+		moveIt();
+		moveIt();
+		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
+			moveIt();
+		}
 		turnDown();
 		while(getInputTuple().airDraft==false && getInputTuple().south==true &&checkedMap[0][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 			moveIt();
 		}
-		goHome();
 		
 		
 		//Aktionsschleife
@@ -99,19 +106,18 @@ public class Wumpus extends Base {
 			
 			//Kartenraender erreicht
 			if(getInputTuple().east==false){
-				checkedMap[coordinates[0]][coordinates[1]+1]=true;
+				checkedMap[coordinates[0]+1][coordinates[1]]=true;
 				if(!rightSideDiscovery){
 					turnDown();
 					while(getInputTuple().airDraft==false && getInputTuple().south==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 						moveIt();
-						checkedMap[coordinates[0]][coordinates[1]+1]=true;
+						checkedMap[coordinates[0]+1][coordinates[1]]=true;
 					}
 					rightSideDiscovery=true;
 				}
-				printMap();
 			}
 			if(getInputTuple().south==false){
-				checkedMap[coordinates[0]+1][coordinates[1]]=true;
+				checkedMap[coordinates[0]][coordinates[1]+1]=true;
 			}
 			
 			
@@ -127,6 +133,10 @@ public class Wumpus extends Base {
 			if(sum==0){
 				//System.out.println("We're LOST!");
 				goHome();
+			}
+			if(moveCount>2000){
+				goHome();
+				moveCount=0;
 			}
 			
 		}
@@ -213,7 +223,7 @@ public class Wumpus extends Base {
 	//moving back to last position
 	private void goBack(){
 		////System.out.println("goBack()");
-		setMapFieldBool(true,getCoordinates());
+		//setMapFieldBool(true,getCoordinates());
 		
 		
 		if(lastCoordinates[0]==coordinates[0] && lastCoordinates[1]>coordinates[1]){
@@ -352,13 +362,14 @@ public class Wumpus extends Base {
 			unten = mapValues[myCoordinates.x][myCoordinates.y+1];
 			
 		int[] temp = {oben,rechts,unten,links};
-		/*
+		if(myCoordinates.x==9 && myCoordinates.y==9){
 		System.out.println("Werte: oben " + temp[0] + 
 				" rechts " + temp[1] + 
 				" unten " + temp[2] + 
 				" links " + temp[3]);
 		System.out.println("(" + myCoordinates.x + "|" + myCoordinates.y + ")");  
-		*/
+		printMap();
+		}
 		return temp;
 	}
 	
