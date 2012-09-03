@@ -25,7 +25,7 @@ public class Wumpus extends Base {
 	//Schwellwert fuer schon besuchte Felder
 	int maxVisitCount = 2;
 	//Array der besuchten Koordinaten in aufsteigender Reihenfolge
-	RobotPosition[] travelCoordinates = new RobotPosition[10000];
+	RobotPosition[] travelCoordinates = new RobotPosition[100000];
 	//Anzahl der Laufbewegungen
 	int moveCount=0;
 	
@@ -61,15 +61,6 @@ public class Wumpus extends Base {
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
 		//System.out.println("ROBOT_ID: "+ ROBOT_ID);
 	
-		moveForward();
-		turnDown();
-		moveForward();
-		turnRight();
-		moveForward();
-		turnUp();
-		moveForward();
-		turnLeft();
-		
 		//Aktionsschleife
 		while(!(getInputTuple().color.equals(Color.YELLOW))){
 			
@@ -121,7 +112,6 @@ public class Wumpus extends Base {
 		boolean chosen = false;
 		int tryCount = 0;
 		while(!chosen){
-			
 			//nur ein Ausgang, Zufallsverfahren zu langwierig
 			if(sum==1){
 				if(surroundingValues[0]==1){
@@ -331,13 +321,13 @@ public class Wumpus extends Base {
 			unten = mapValues[myCoordinates.x][myCoordinates.y+1];
 			
 		int[] temp = {oben,rechts,unten,links};
-		/*
+		
 		System.out.println("Werte: oben " + temp[0] + 
 				" rechts " + temp[1] + 
 				" unten " + temp[2] + 
 				" links " + temp[3]);
 		System.out.println("(" + myCoordinates.x + "|" + myCoordinates.y + ")");  
-		*/
+		
 		return temp;
 	}
 	
