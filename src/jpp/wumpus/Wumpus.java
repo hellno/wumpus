@@ -12,13 +12,16 @@ import rose.control.InputTuple.RobotPosition;
 
 public class Wumpus extends Base {
 
-	
+	//abstrahierte Karten:
+	//in mapValues werden waerend der Fahrt in jede 'sichere' Koordinate eine 1 gespeichert
+	//travelMap speichert die Anzahl der Besuche des Roboters in der jeweiligen Koordinate
 	int[][] mapValues = new int[20][20];
 	boolean[][] checkedMap = new boolean[20][20];
 	int[][] travelMap = new int[20][20];
+	//Koordinaten, der aktuellen Position und der vergangenen Position und des Wumpus
+	//zum ueberpruefen, dass bei mehreren auswahlmoeglichkeiten nicht zurueck gegangen wird
 	int[] coordinates = new int[2];
 	int[] lastCoordinates = new int[2];
-	int[] maxCoordinates = new int[2];
 	int[] wumpCoordinates = new int[2];
 	
 	
@@ -29,8 +32,10 @@ public class Wumpus extends Base {
 	//Anzahl der Laufbewegungen
 	int moveCount=0;
 	
+	//Robot_ID, aendert sich, wenn Karte mit oder ohne Wumpus erstellt wird
 	int ROBOT_ID;
 	boolean wumpDead;
+	
 	//Werte in der Umgebung des akt Feldes im Uhrzeigersin
 	int[] surroundingValues = new int[4];
 	int[] surroundingTravelValues = new int[4];
@@ -48,18 +53,18 @@ public class Wumpus extends Base {
 			ROBOT_ID=1;
 			wumpCoordinates[0] = getInputTuple().robotPositions.get(0).x;
 			wumpCoordinates[1] = getInputTuple().robotPositions.get(0).y;
-			//System.out.println("Wump bei (" + wumpCoordinates[0] + "|" + wumpCoordinates[1] + ")");
+			System.out.println("Wump bei (" + wumpCoordinates[0] + "|" + wumpCoordinates[1] + ")");
 			setMapFieldValue(0,wumpCoordinates[0],wumpCoordinates[1]);
 			setMapFieldBool(true,wumpCoordinates);
 		}
-		//HIER GEHTS AB
+		//Startfeldbesuche manuell um 2 erhoehen, damit am Anfang andere Felder 'attraktiver' sind
 		setMapTravelValue(0,0);
 		setMapTravelValue(0,0);
 		
 		//aktuelle Elemente in Karte zeichnen
 		setMapFieldSurrounding(getCoordinates());
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
-		//System.out.println("ROBOT_ID: "+ ROBOT_ID);
+		System.out.println("ROBOT_ID: "+ ROBOT_ID);
 	
 		//Aktionsschleife
 		while(!(getInputTuple().color.equals(Color.YELLOW))){
@@ -69,8 +74,14 @@ public class Wumpus extends Base {
 			temp[0] = myRobot.x;
 			temp[1] = myRobot.y;
 			
+			//aktuelle Werte der Umgebung und Koordinaten setzen
 			setMapFieldSurrounding(temp);
 			setCoordinates(temp);
+			
+			//Weg fuer Heimreise abkuerzen, bisheriges Rumgeirre "vergessen"
+			if(coordinates[0]==0 && coordinates[1]==0){
+				moveCount=0;
+			}
 			
 			surroundingValues = getSurroundingValues(getInputTuple().robotPositions.get(ROBOT_ID));
 			surroundingTravelValues = getSurroundingTravelValues(getInputTuple().robotPositions.get(ROBOT_ID));
@@ -98,8 +109,7 @@ public class Wumpus extends Base {
 			
 		}
 		
-		//System.out.println("Gold gefunden!");
-		
+		System.out.println("Gold gefunden! -> Heimreise");
 		goHome();
 		printMap();
 		done();
@@ -221,9 +231,8 @@ public class Wumpus extends Base {
 			//System.out.println("i: " + i);
 			moveToCoordinate(travelCoordinates[i],true);
 		}
-		turnRight();
-		printMap();
-		moveCount=1;
+		
+		
 	}
 	
 	private void moveIt(){
@@ -321,13 +330,13 @@ public class Wumpus extends Base {
 			unten = mapValues[myCoordinates.x][myCoordinates.y+1];
 			
 		int[] temp = {oben,rechts,unten,links};
-		
+		/*
 		System.out.println("Werte: oben " + temp[0] + 
 				" rechts " + temp[1] + 
 				" unten " + temp[2] + 
 				" links " + temp[3]);
 		System.out.println("(" + myCoordinates.x + "|" + myCoordinates.y + ")");  
-		
+		*/
 		return temp;
 	}
 	
