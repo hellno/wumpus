@@ -26,11 +26,11 @@ public class Wumpus extends Base {
 	
 	//boolean, ob rechte Seite schon erforscht wurde, beschleunigt das Vorgehen auf manchen Maps
 	boolean rightSideDiscovery=false;
-	
+
 	//Schwellwert fuer schon besuchte Felder
-	int maxVisitCount = 2;
+	int maxVisitCount = 3;
 	//Array der besuchten Koordinaten in aufsteigender Reihenfolge
-	RobotPosition[] travelCoordinates = new RobotPosition[Integer.MAX_VALUE];
+	RobotPosition[] travelCoordinates = new RobotPosition[1000000];
 	//Anzahl der Laufbewegungen
 	int moveCount=0;
 	
@@ -42,7 +42,6 @@ public class Wumpus extends Base {
 	int[] surroundingValues = new int[4];
 	int[] surroundingTravelValues = new int[4];
 	String view = "east";
-	
 
 	public void run() {
 		//wenn vorhanden, Wumpus in Karte zeichnen
@@ -69,11 +68,16 @@ public class Wumpus extends Base {
 		System.out.println("ROBOT_ID: "+ ROBOT_ID);
 	
 		//zusaetzliche Erforschung vor normalem Ablauf
-		turnDown();
-		while(getInputTuple().airDraft==false && getInputTuple().south==true){
+		while(getInputTuple().airDraft==false && getInputTuple().east==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x+1][0]==false){
 			moveIt();
 		}
 		goHome();
+		turnDown();
+		while(getInputTuple().airDraft==false && getInputTuple().south==true &&checkedMap[0][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
+			moveIt();
+		}
+		goHome();
+		
 		
 		//Aktionsschleife
 		while(!(getInputTuple().color.equals(Color.YELLOW))){
@@ -98,12 +102,13 @@ public class Wumpus extends Base {
 				checkedMap[coordinates[0]][coordinates[1]+1]=true;
 				if(!rightSideDiscovery){
 					turnDown();
-					while(getInputTuple().airDraft==false && getInputTuple().south==true){
+					while(getInputTuple().airDraft==false && getInputTuple().south==true && checkedMap[getInputTuple().robotPositions.get(ROBOT_ID).x][getInputTuple().robotPositions.get(ROBOT_ID).y+1]==false){
 						moveIt();
 						checkedMap[coordinates[0]][coordinates[1]+1]=true;
 					}
 					rightSideDiscovery=true;
 				}
+				printMap();
 			}
 			if(getInputTuple().south==false){
 				checkedMap[coordinates[0]+1][coordinates[1]]=true;
@@ -473,10 +478,13 @@ public class Wumpus extends Base {
 		//System.out.println("vor dem mapFieldSurroundings");
 		
 		if(getInputTuple().airDraft==false){
-			setMapFieldValue(1,myCoordinates[0],myCoordinates[1]+1);
+			
 			setMapFieldValue(1,myCoordinates[0],myCoordinates[1]-1);
-			setMapFieldValue(1,myCoordinates[0]+1,myCoordinates[1]);
 			setMapFieldValue(1,myCoordinates[0]-1,myCoordinates[1]);
+			if(getInputTuple().south==true)
+				setMapFieldValue(1,myCoordinates[0],myCoordinates[1]+1);
+			if(getInputTuple().east==true)
+				setMapFieldValue(1,myCoordinates[0]+1,myCoordinates[1]);
 		}
 		//System.out.println("mapFieldSurroundings gesetzt");
 	}
