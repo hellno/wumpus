@@ -24,11 +24,13 @@ public class Wumpus extends Base {
 	int[] lastCoordinates = new int[2];
 	int[] wumpCoordinates = new int[2];
 	
+	//boolean, ob rechte Seite schon erforscht wurde, beschleunigt das Vorgehen auf manchen Maps
+	boolean rightSideDiscovery=false;
 	
 	//Schwellwert fuer schon besuchte Felder
 	int maxVisitCount = 2;
 	//Array der besuchten Koordinaten in aufsteigender Reihenfolge
-	RobotPosition[] travelCoordinates = new RobotPosition[100000];
+	RobotPosition[] travelCoordinates = new RobotPosition[Integer.MAX_VALUE];
 	//Anzahl der Laufbewegungen
 	int moveCount=0;
 	
@@ -66,6 +68,13 @@ public class Wumpus extends Base {
 		setMapFieldValue(1, getCoordinates()[0], getCoordinates()[1]);
 		System.out.println("ROBOT_ID: "+ ROBOT_ID);
 	
+		//zusaetzliche Erforschung vor normalem Ablauf
+		turnDown();
+		while(getInputTuple().airDraft==false && getInputTuple().south==true){
+			moveIt();
+		}
+		goHome();
+		
 		//Aktionsschleife
 		while(!(getInputTuple().color.equals(Color.YELLOW))){
 			
@@ -83,21 +92,29 @@ public class Wumpus extends Base {
 				moveCount=0;
 			}
 			
-			surroundingValues = getSurroundingValues(getInputTuple().robotPositions.get(ROBOT_ID));
-			surroundingTravelValues = getSurroundingTravelValues(getInputTuple().robotPositions.get(ROBOT_ID));
-			
 			
 			//Kartenraender erreicht
 			if(getInputTuple().east==false){
 				checkedMap[coordinates[0]][coordinates[1]+1]=true;
+				if(!rightSideDiscovery){
+					turnDown();
+					while(getInputTuple().airDraft==false && getInputTuple().south==true){
+						moveIt();
+						checkedMap[coordinates[0]][coordinates[1]+1]=true;
+					}
+					rightSideDiscovery=true;
+				}
 			}
 			if(getInputTuple().south==false){
 				checkedMap[coordinates[0]+1][coordinates[1]]=true;
 			}
 			
 			
+			surroundingValues = getSurroundingValues(getInputTuple().robotPositions.get(ROBOT_ID));
+			surroundingTravelValues = getSurroundingTravelValues(getInputTuple().robotPositions.get(ROBOT_ID));
+			
+			//unnauffaellig, aber hier gehts ab
 			int sum = sum(surroundingValues);
-			//printMap();
 			if(sum>=1){
 				goSomewhere(sum);
 			}
